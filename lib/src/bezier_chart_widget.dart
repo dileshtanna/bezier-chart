@@ -798,19 +798,19 @@ class BezierChartState extends State<BezierChart>
           widget.selectedValue.toString() +
           "   " +
           _selectedValue.toString());
-      int index = -1;
-      index = _xAxisDataPoints
-          .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
-      if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
-        final space = (_contentWidth / _xAxisDataPoints.length);
-        Offset fixedPosition =
-            Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-        // _scrollController.jumpTo((index * space));
-        if (_verticalIndicatorPosition != fixedPosition) {
+      if (widget.selectedValue != _selectedValue) {
+        int index = -1;
+        index = _xAxisDataPoints
+            .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
+        if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
+          final space = (_contentWidth / _xAxisDataPoints.length);
+          Offset fixedPosition =
+              Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
+          // _scrollController.jumpTo((index * space));
           setState(
             () {
               _verticalIndicatorPosition = fixedPosition;
-              // _selectedValue = widget.selectedValue;
+              _selectedValue = widget.selectedValue;
             },
           );
         }
