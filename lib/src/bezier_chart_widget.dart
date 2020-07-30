@@ -765,6 +765,7 @@ class BezierChartState extends State<BezierChart>
   @override
   void initState() {
     _currentBezierChartScale = widget.bezierChartScale;
+    _selectedValue = widget.selectedValue;
     _scrollController = ScrollController();
     _animationController = AnimationController(
       vsync: this,
