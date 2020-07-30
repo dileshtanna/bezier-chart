@@ -810,7 +810,7 @@ class BezierChartState extends State<BezierChart>
                 globalPosition: fixedPosition,
                 offsetFromOrigin: fixedPosition,
               ),
-              updatePosition: false,
+              updatePosition: true,
             );
             _selectedValue = widget.selectedValue;
           },
