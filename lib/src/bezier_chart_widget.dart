@@ -806,13 +806,6 @@ class BezierChartState extends State<BezierChart>
         setState(
           () {
             _verticalIndicatorPosition = fixedPosition;
-            _onDisplayIndicator(
-              LongPressMoveUpdateDetails(
-                globalPosition: fixedPosition,
-                offsetFromOrigin: fixedPosition,
-              ),
-              updatePosition: true,
-            );
             _selectedValue = widget.selectedValue;
           },
         );
