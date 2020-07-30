@@ -152,7 +152,6 @@ class BezierChartState extends State<BezierChart>
   AnimationController _animationController;
   ScrollController _scrollController;
   GlobalKey _keyScroll = GlobalKey();
-  double _selectedValue;
 
   ///Track the current position when dragging the indicator
   Offset _verticalIndicatorPosition;
@@ -198,6 +197,7 @@ class BezierChartState extends State<BezierChart>
   double _valueSelected;
   GlobalKey _keyLastYAxisItem = GlobalKey();
   double _yAxisWidth = 0.0;
+  double _selectedValue;
 
   ///Refresh the position of the vertical/bubble
   void _refreshPosition(details) {
@@ -765,7 +765,6 @@ class BezierChartState extends State<BezierChart>
   @override
   void initState() {
     _currentBezierChartScale = widget.bezierChartScale;
-    _selectedValue = widget.selectedValue;
     _scrollController = ScrollController();
     _animationController = AnimationController(
       vsync: this,
@@ -802,7 +801,7 @@ class BezierChartState extends State<BezierChart>
         final space = (_contentWidth / _xAxisDataPoints.length);
         Offset fixedPosition =
             Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-        _scrollController.jumpTo((index * space));
+        // _scrollController.jumpTo((index * space));
         setState(
           () {
             _verticalIndicatorPosition = fixedPosition;
