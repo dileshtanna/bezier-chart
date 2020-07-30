@@ -789,27 +789,27 @@ class BezierChartState extends State<BezierChart>
 
   @override
   Widget build(BuildContext context) {
-    print("Heree I ammmm....:  " +
+    print("Heree I ammmmaaaaa....:  " +
         widget.selectedValue.toString() +
         "   " +
         _selectedValue.toString());
-    if (_selectedValue != widget.selectedValue) {
-      int index = -1;
-      index = _xAxisDataPoints
-          .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
-      if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
-        final space = (_contentWidth / _xAxisDataPoints.length);
-        Offset fixedPosition =
-            Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-        // _scrollController.jumpTo((index * space));
-        setState(
-          () {
-            _verticalIndicatorPosition = fixedPosition;
-            _selectedValue = widget.selectedValue;
-          },
-        );
-      }
-    }
+    // if (_selectedValue != widget.selectedValue) {
+    //   int index = -1;
+    //   index = _xAxisDataPoints
+    //       .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
+    //   if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
+    //     final space = (_contentWidth / _xAxisDataPoints.length);
+    //     Offset fixedPosition =
+    //         Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
+    //     // _scrollController.jumpTo((index * space));
+    //     setState(
+    //       () {
+    //         _verticalIndicatorPosition = fixedPosition;
+    //         _selectedValue = widget.selectedValue;
+    //       },
+    //     );
+    //   }
+    // }
     //using `Listener` to fix the issue with single touch for multitouch gesture like pinch/zoom
     //https://github.com/flutter/flutter/issues/13102
     return Container(
