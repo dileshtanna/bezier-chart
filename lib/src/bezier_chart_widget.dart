@@ -794,10 +794,6 @@ class BezierChartState extends State<BezierChart>
   @override
   Widget build(BuildContext context) {
     if (allowReRendering == true) {
-      print("Heree I ammmmaaaaa....:  " +
-          widget.selectedValue.toString() +
-          "   " +
-          _selectedValue.toString());
       if (widget.selectedValue != _selectedValue) {
         int index = -1;
         index = _xAxisDataPoints
@@ -806,7 +802,7 @@ class BezierChartState extends State<BezierChart>
           final space = (_contentWidth / _xAxisDataPoints.length);
           Offset fixedPosition =
               Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-          // _scrollController.jumpTo((index * space));
+          _scrollController.jumpTo((index * space));
           setState(
             () {
               _verticalIndicatorPosition = fixedPosition;
