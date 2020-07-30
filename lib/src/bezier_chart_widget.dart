@@ -156,6 +156,7 @@ class BezierChartState extends State<BezierChart>
   ///Track the current position when dragging the indicator
   Offset _verticalIndicatorPosition;
   bool _displayIndicator = false;
+  bool allowReRendering = false;
 
   ///padding for leading and trailing of the chart
   final double horizontalPadding = 50.0;
@@ -479,6 +480,9 @@ class BezierChartState extends State<BezierChart>
     if (_isScrollable) {
       setState(() {});
     }
+    setState(() {
+      allowReRendering = true;
+    });
   }
 
   _checkIfNeedScroll() {
@@ -789,25 +793,27 @@ class BezierChartState extends State<BezierChart>
 
   @override
   Widget build(BuildContext context) {
-    print("Heree I ammmmaaaaa....:  " +
-        widget.selectedValue.toString() +
-        "   " +
-        _selectedValue.toString());
-    int index = -1;
-    index = _xAxisDataPoints
-        .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
-    if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
-      final space = (_contentWidth / _xAxisDataPoints.length);
-      Offset fixedPosition =
-          Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-      // _scrollController.jumpTo((index * space));
-      if (_verticalIndicatorPosition != fixedPosition) {
-        setState(
-          () {
-            _verticalIndicatorPosition = fixedPosition;
-            // _selectedValue = widget.selectedValue;
-          },
-        );
+    if (allowReRendering == true) {
+      print("Heree I ammmmaaaaa....:  " +
+          widget.selectedValue.toString() +
+          "   " +
+          _selectedValue.toString());
+      int index = -1;
+      index = _xAxisDataPoints
+          .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
+      if (index > 0 && _currentBezierChartScale == BezierChartScale.CUSTOM) {
+        final space = (_contentWidth / _xAxisDataPoints.length);
+        Offset fixedPosition =
+            Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
+        // _scrollController.jumpTo((index * space));
+        if (_verticalIndicatorPosition != fixedPosition) {
+          setState(
+            () {
+              _verticalIndicatorPosition = fixedPosition;
+              // _selectedValue = widget.selectedValue;
+            },
+          );
+        }
       }
     }
     //using `Listener` to fix the issue with single touch for multitouch gesture like pinch/zoom
