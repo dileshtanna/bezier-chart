@@ -1440,7 +1440,11 @@ class _BezierChartPainter extends CustomPainter {
         textPainter.layout();
 
         infoWidth =
-            textPainter.width + radiusDotIndicatorItems * 2 + horizontalPadding;
+            textPainter.width + horizontalPadding;
+
+        if(config.showCircleIndicators){
+          infoWidth += radiusDotIndicatorItems * 2;
+        }
 
         ///Draw Bubble Indicator Info
 
