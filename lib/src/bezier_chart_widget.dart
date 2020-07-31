@@ -779,7 +779,7 @@ class BezierChartState extends State<BezierChart>
     _bubbleAnimationController = AnimationController(
       vsync: this,
       duration: Duration(
-        seconds: 2,
+        seconds: 1,
       ),
     );
     _bubbleAnimationController.forward();
