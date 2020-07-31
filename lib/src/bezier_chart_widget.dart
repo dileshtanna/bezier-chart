@@ -1412,7 +1412,8 @@ class _BezierChartPainter extends CustomPainter {
               ],
             ),
           );
-          centerCircles.add(
+          if(config.showCircleIndicators){
+            centerCircles.add(
             // Offset(center.dx - infoWidth / 2 + radiusDotIndicatorItems * 1.5,
             Offset(
                 center.dx,
@@ -1422,6 +1423,7 @@ class _BezierChartPainter extends CustomPainter {
                     space +
                     (_currentCustomValues.length == 1 ? 1 : 0)),
           );
+          }
           space += 12.5;
         }
 
@@ -1509,7 +1511,8 @@ class _BezierChartPainter extends CustomPainter {
           );
 
           //draw circle indicators and text
-          for (int z = 0; z < _currentCustomValues.length; z++) {
+          if(config.showCircleIndicators){
+            for (int z = 0; z < _currentCustomValues.length; z++) {
             _CustomValue customValue = _currentCustomValues[z];
             Offset centerIndicator = centerCircles.reversed.toList()[z];
             Offset fixedCenter = Offset(
@@ -1531,6 +1534,7 @@ class _BezierChartPainter extends CustomPainter {
                   ..color = Colors.black
                   ..strokeWidth = 0.5
                   ..style = PaintingStyle.stroke);
+          }
           }
         }
       }
