@@ -1472,7 +1472,22 @@ class _BezierChartPainter extends CustomPainter {
         }
         }
         else{
-          paintInfo.maskFilter = MaskFilter.blur(BlurStyle.normal, blurRadius * 0.57735 + 0.5);
+          final blurPaint = paintInfo;
+          blurPaint.maskFilter = MaskFilter.blur(BlurStyle.normal, blurRadius * 0.57735 + 0.5);
+          canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            _fromCenter(
+              center: Offset(
+                center.dx,
+                (center.dy - offsetInfo * animation.value),
+              ),
+              width: infoWidth+blurRadius *2,
+              height: infoHeight+blurRadius *2,
+            ),
+            Radius.circular(5),
+          ),
+          blurPaint,
+        );
         }
 
         //Draw Bubble info
