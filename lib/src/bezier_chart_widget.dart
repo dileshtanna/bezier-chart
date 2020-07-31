@@ -1360,15 +1360,20 @@ class _BezierChartPainter extends CustomPainter {
 
         double infoWidth = 0; //base value, modified based on the label text
         double infoHeight = 40;
+        final double triangleSize = 6; //indicator triangle
 
         //bubble indicator padding
         final horizontalPadding = 28.0;
 
-        double offsetInfo = 42 + ((_currentCustomValues.length - 1.0) * 10.0);
+        double offsetInfo = 36 + ((_currentCustomValues.length - 1.0) * 10.0);
         final centerForCircle = Offset(verticalX, height - yValue);
         final center = config.verticalIndicatorFixedPosition
             ? Offset(verticalX, offsetInfo)
             : centerForCircle;
+
+        if (!config.bubbleIndicatorBlurShadow) {
+          offsetInfo += triangleSize;
+        }
 
         if (config.showVerticalIndicator) {
           canvas.drawLine(
@@ -1412,17 +1417,17 @@ class _BezierChartPainter extends CustomPainter {
               ],
             ),
           );
-          if(config.showCircleIndicators){
+          if (config.showCircleIndicators) {
             centerCircles.add(
-            // Offset(center.dx - infoWidth / 2 + radiusDotIndicatorItems * 1.5,
-            Offset(
-                center.dx,
-                center.dy -
-                    offsetInfo -
-                    radiusDotIndicatorItems +
-                    space +
-                    (_currentCustomValues.length == 1 ? 1 : 0)),
-          );
+              // Offset(center.dx - infoWidth / 2 + radiusDotIndicatorItems * 1.5,
+              Offset(
+                  center.dx,
+                  center.dy -
+                      offsetInfo -
+                      radiusDotIndicatorItems +
+                      space +
+                      (_currentCustomValues.length == 1 ? 1 : 0)),
+            );
           }
           space += 12.5;
         }
@@ -1439,55 +1444,57 @@ class _BezierChartPainter extends CustomPainter {
         );
         textPainter.layout();
 
-        infoWidth =
-            textPainter.width + horizontalPadding;
+        infoWidth = textPainter.width + horizontalPadding;
 
-        if(config.showCircleIndicators){
+        if (config.showCircleIndicators) {
           infoWidth += radiusDotIndicatorItems * 2;
         }
 
         ///Draw Bubble Indicator Info
-        
-        
-        double blurRadius = 5;
+
+        double blurRadius = 6;
 
         final paintInfo = Paint()
           ..color = config.bubbleIndicatorColor
           ..style = PaintingStyle.fill;
-         
+
+        final blurPaint = Paint()
+          ..color = Color(0xff666666).withOpacity(0.3)
+          ..style = PaintingStyle.fill
+          ..maskFilter =
+              MaskFilter.blur(BlurStyle.outer, blurRadius * 0.57735 + 0.5);
+
+        double indicatorOffsetY = center.dy - offsetInfo * animation.value;
 
         /// Draw shadow bubble info
-        if(!config.bubbleIndicatorBlurShadow){
+        if (!config.bubbleIndicatorBlurShadow) {
           if (animation.isCompleted) {
-          Path path = Path();
-          path.moveTo(center.dx - infoWidth / 2 + 4,
-              center.dy - offsetInfo + infoHeight / 1.8);
-          path.lineTo(center.dx + infoWidth / 2 + 4,
-              center.dy - offsetInfo + infoHeight / 1.8);
-          path.lineTo(center.dx + infoWidth / 2 + 4,
-              center.dy - offsetInfo - infoHeight / 3);
-          //path.close();
-          // canvas.drawShadow(path, Colors.black, 20.0, false);
-          canvas.drawPath(path, paintControlPoints..color = Colors.black12);
-        }
-        }
-        else{
-          final blurPaint = paintInfo;
-          blurPaint.maskFilter = MaskFilter.blur(BlurStyle.normal, blurRadius * 0.57735 + 0.5);
+            Path path = Path();
+            path.moveTo(center.dx - infoWidth / 2 + 4,
+                center.dy - offsetInfo + infoHeight / 1.8);
+            path.lineTo(center.dx + infoWidth / 2 + 4,
+                center.dy - offsetInfo + infoHeight / 1.8);
+            path.lineTo(center.dx + infoWidth / 2 + 4,
+                center.dy - offsetInfo - infoHeight / 3);
+            //path.close();
+            // canvas.drawShadow(path, Colors.black, 20.0, false);
+            canvas.drawPath(path, paintControlPoints..color = Colors.black12);
+          }
+        } else {
           canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            _fromCenter(
-              center: Offset(
-                center.dx,
-                (center.dy - offsetInfo * animation.value),
+            RRect.fromRectAndRadius(
+              _fromCenter(
+                center: Offset(
+                  center.dx,
+                  indicatorOffsetY + 1,
+                ),
+                width: infoWidth,
+                height: infoHeight,
               ),
-              width: infoWidth+blurRadius *2,
-              height: infoHeight+blurRadius *2,
+              Radius.circular(5),
             ),
-            Radius.circular(5),
-          ),
-          blurPaint,
-        );
+            blurPaint,
+          );
         }
 
         //Draw Bubble info
@@ -1496,7 +1503,7 @@ class _BezierChartPainter extends CustomPainter {
             _fromCenter(
               center: Offset(
                 center.dx,
-                (center.dy - offsetInfo * animation.value),
+                indicatorOffsetY,
               ),
               width: infoWidth,
               height: infoHeight,
@@ -1507,25 +1514,27 @@ class _BezierChartPainter extends CustomPainter {
         );
 
         //Draw triangle Bubble
-        final double triangleSize = 6;
+        if (!config.bubbleIndicatorBlurShadow) {
+          Path pathArrow = Path();
 
-        Path pathArrow = Path();
+          pathArrow.moveTo(center.dx - triangleSize,
+              center.dy + 1 - offsetInfo * animation.value + infoHeight / 2.1);
+          pathArrow.lineTo(
+              center.dx,
+              center.dy +
+                  1 -
+                  offsetInfo * animation.value +
+                  infoHeight / 2.1 +
+                  triangleSize * 1.5);
+          pathArrow.lineTo(center.dx + triangleSize,
+              center.dy + 1 - offsetInfo * animation.value + infoHeight / 2.1);
+          pathArrow.close();
+          canvas.drawPath(
+            pathArrow,
+            paintInfo,
+          );
+        }
 
-        pathArrow.moveTo(center.dx - triangleSize,
-            center.dy - offsetInfo * animation.value + infoHeight / 2.1);
-        pathArrow.lineTo(
-            center.dx,
-            center.dy -
-                offsetInfo * animation.value +
-                infoHeight / 2.1 +
-                triangleSize * 1.5);
-        pathArrow.lineTo(center.dx + triangleSize,
-            center.dy - offsetInfo * animation.value + infoHeight / 2.1);
-        pathArrow.close();
-        canvas.drawPath(
-          pathArrow,
-          paintInfo,
-        );
         //End triangle
 
         if (animation.isCompleted) {
@@ -1539,30 +1548,30 @@ class _BezierChartPainter extends CustomPainter {
           );
 
           //draw circle indicators and text
-          if(config.showCircleIndicators){
+          if (config.showCircleIndicators) {
             for (int z = 0; z < _currentCustomValues.length; z++) {
-            _CustomValue customValue = _currentCustomValues[z];
-            Offset centerIndicator = centerCircles.reversed.toList()[z];
-            Offset fixedCenter = Offset(
-                centerIndicator.dx -
-                    infoWidth / 2 +
-                    radiusDotIndicatorItems +
-                    4,
-                centerIndicator.dy);
-            canvas.drawCircle(
-                fixedCenter,
-                radiusDotIndicatorItems,
-                Paint()
-                  ..color = customValue.color
-                  ..style = PaintingStyle.fill);
-            canvas.drawCircle(
-                fixedCenter,
-                radiusDotIndicatorItems,
-                Paint()
-                  ..color = Colors.black
-                  ..strokeWidth = 0.5
-                  ..style = PaintingStyle.stroke);
-          }
+              _CustomValue customValue = _currentCustomValues[z];
+              Offset centerIndicator = centerCircles.reversed.toList()[z];
+              Offset fixedCenter = Offset(
+                  centerIndicator.dx -
+                      infoWidth / 2 +
+                      radiusDotIndicatorItems +
+                      4,
+                  centerIndicator.dy);
+              canvas.drawCircle(
+                  fixedCenter,
+                  radiusDotIndicatorItems,
+                  Paint()
+                    ..color = customValue.color
+                    ..style = PaintingStyle.fill);
+              canvas.drawCircle(
+                  fixedCenter,
+                  radiusDotIndicatorItems,
+                  Paint()
+                    ..color = Colors.black
+                    ..strokeWidth = 0.5
+                    ..style = PaintingStyle.stroke);
+            }
           }
         }
       }
