@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:touchable/touchable.dart';
 
 import 'bezier_line.dart';
 import 'bezier_chart_config.dart';
@@ -870,65 +871,69 @@ class BezierChartState extends State<BezierChart>
                   padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
                   child: Align(
                     alignment: Alignment(0.0, 0.7),
-                    child: CustomPaint(
-                      size: Size(
-                        _contentWidth,
-                        maxHeight,
-                      ),
-                      painter: _BezierChartPainter(
-                        shouldRepaintChart: areSeriesDifferent,
-                        config: widget.config,
-                        maxYValue: _yValues.last,
-                        minYValue: _yValues.first,
-                        bezierChartScale: _currentBezierChartScale,
-                        verticalIndicatorPosition: _verticalIndicatorPosition,
-                        series: computedSeries,
-                        showIndicator: _displayIndicator,
-                        animation: CurvedAnimation(
-                          parent: _animationController,
-                          curve: Interval(
-                            0.0,
-                            1.0,
-                            curve: Curves.elasticOut,
-                          ),
+                    child: CanvasTouchDetector(
+                      builder: (context) => CustomPaint(
+                        size: Size(
+                          _contentWidth,
+                          maxHeight,
                         ),
-                        xAxisDataPoints: _xAxisDataPoints,
-                        onDataPointSnap: _onDataPointSnap,
-                        maxWidth: MediaQuery.of(context).size.width,
-                        scrollOffset: _scrollController.hasClients
-                            ? _scrollController.offset
-                            : 0.0,
-                        footerValueBuilder: widget.footerValueBuilder,
-                        bubbleLabelValueBuilder: widget.bubbleLabelValueBuilder,
-                        footerDateTimeBuilder: widget.footerDateTimeBuilder,
-                        bubbleLabelDateTimeBuilder:
-                            widget.bubbleLabelDateTimeBuilder,
-                        onValueSelected: (val) {
-                          if (widget.onValueSelected != null) {
-                            if (_valueSelected == null) {
-                              _valueSelected = val;
-                              widget.onValueSelected(_valueSelected);
-                            } else {
-                              if (_valueSelected != val) {
+                        painter: _BezierChartPainter(
+                          context: context,
+                          shouldRepaintChart: areSeriesDifferent,
+                          config: widget.config,
+                          maxYValue: _yValues.last,
+                          minYValue: _yValues.first,
+                          bezierChartScale: _currentBezierChartScale,
+                          verticalIndicatorPosition: _verticalIndicatorPosition,
+                          series: computedSeries,
+                          showIndicator: _displayIndicator,
+                          animation: CurvedAnimation(
+                            parent: _animationController,
+                            curve: Interval(
+                              0.0,
+                              1.0,
+                              curve: Curves.elasticOut,
+                            ),
+                          ),
+                          xAxisDataPoints: _xAxisDataPoints,
+                          onDataPointSnap: _onDataPointSnap,
+                          maxWidth: MediaQuery.of(context).size.width,
+                          scrollOffset: _scrollController.hasClients
+                              ? _scrollController.offset
+                              : 0.0,
+                          footerValueBuilder: widget.footerValueBuilder,
+                          bubbleLabelValueBuilder:
+                              widget.bubbleLabelValueBuilder,
+                          footerDateTimeBuilder: widget.footerDateTimeBuilder,
+                          bubbleLabelDateTimeBuilder:
+                              widget.bubbleLabelDateTimeBuilder,
+                          onValueSelected: (val) {
+                            if (widget.onValueSelected != null) {
+                              if (_valueSelected == null) {
                                 _valueSelected = val;
                                 widget.onValueSelected(_valueSelected);
+                              } else {
+                                if (_valueSelected != val) {
+                                  _valueSelected = val;
+                                  widget.onValueSelected(_valueSelected);
+                                }
                               }
                             }
-                          }
-                        },
-                        onDateTimeSelected: (val) {
-                          if (widget.onDateTimeSelected != null) {
-                            if (_dateTimeSelected == null) {
-                              _dateTimeSelected = val;
-                              widget.onDateTimeSelected(_dateTimeSelected);
-                            } else {
-                              if (_dateTimeSelected != val) {
+                          },
+                          onDateTimeSelected: (val) {
+                            if (widget.onDateTimeSelected != null) {
+                              if (_dateTimeSelected == null) {
                                 _dateTimeSelected = val;
                                 widget.onDateTimeSelected(_dateTimeSelected);
+                              } else {
+                                if (_dateTimeSelected != val) {
+                                  _dateTimeSelected = val;
+                                  widget.onDateTimeSelected(_dateTimeSelected);
+                                }
                               }
                             }
-                          }
-                        },
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -1023,6 +1028,7 @@ _getRealValue(double value, double maxConstraint, double maxValue) =>
 
 //BezierChart
 class _BezierChartPainter extends CustomPainter {
+  final BuildContext context;
   final BezierChartConfig config;
   final Offset verticalIndicatorPosition;
   final List<BezierLine> series;
@@ -1051,6 +1057,7 @@ class _BezierChartPainter extends CustomPainter {
   final bool shouldRepaintChart;
 
   _BezierChartPainter({
+    this.context,
     this.shouldRepaintChart,
     this.config,
     this.verticalIndicatorPosition,
@@ -1099,6 +1106,7 @@ class _BezierChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    var touchableCanvas = TouchyCanvas(context, canvas);
     final height = size.height - config.footerHeight;
     Paint paintVerticalIndicator = Paint();
     try {
@@ -1408,11 +1416,11 @@ class _BezierChartPainter extends CustomPainter {
               text: config.bubbleIndicatorValueFormat != null
                   ? "${config.bubbleIndicatorValueFormat.format(double.parse(customValue.value))} "
                   : "${customValue.value} ",
-              style: config.bubbleIndicatorValueStyle.copyWith(fontSize: 11),
+              style: config.bubbleIndicatorValueStyle,
               children: [
                 TextSpan(
                   text: "${customValue.label}\n",
-                  style: config.bubbleIndicatorLabelStyle.copyWith(fontSize: 9),
+                  style: config.bubbleIndicatorLabelStyle,
                 ),
               ],
             ),
@@ -1498,7 +1506,7 @@ class _BezierChartPainter extends CustomPainter {
         }
 
         //Draw Bubble info
-        canvas.drawRRect(
+        touchableCanvas.drawRRect(
           RRect.fromRectAndRadius(
             _fromCenter(
               center: Offset(
@@ -1511,6 +1519,7 @@ class _BezierChartPainter extends CustomPainter {
             Radius.circular(5),
           ),
           paintInfo,
+          onTapDown: config.onBubbleIndicatorTapDown,
         );
 
         //Draw triangle Bubble

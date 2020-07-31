@@ -21,6 +21,8 @@ enum BezierChartAggregation {
   MIN,
 }
 
+typedef BubbleIndicatorTap = void Function(TapDownDetails tapDetails);
+
 ///`BezierChartConfig` allows the customization of the `BezierChart` widget
 class BezierChartConfig {
   ///`true` if you want to display the vertical indicator
@@ -111,48 +113,52 @@ class BezierChartConfig {
   ///`false` if you don't want blur shadow it will solid shadow
   final bool bubbleIndicatorBlurShadow;
 
-  BezierChartConfig({
-    this.verticalIndicatorStrokeWidth = 2.0,
-    this.verticalIndicatorColor = Colors.black,
-    this.showVerticalIndicator = true,
-    this.showDataPoints = true,
-    this.displayYAxis = false,
-    this.snap = true,
-    this.backgroundColor = Colors.transparent,
-    this.xAxisTextStyle,
-    this.yAxisTextStyle,
-    this.footerHeight = 35.0,
-    this.contentWidth,
-    this.pinchZoom = true,
-    this.bubbleIndicatorColor = Colors.white,
-    this.backgroundGradient,
-    this.verticalIndicatorFixedPosition = false,
-    this.startYAxisFromNonZeroValue = true,
-    this.displayLinesXAxis = false,
-    this.stepsYAxis,
-    this.xLinesColor = Colors.grey,
-    this.displayDataPointWhenNoValue = true,
-    this.bubbleIndicatorLabelStyle = const TextStyle(
-      color: Colors.grey,
-      fontWeight: FontWeight.w700,
-      fontSize: 9,
-    ),
-    this.bubbleIndicatorTitleStyle = const TextStyle(
-      color: Colors.grey,
-      fontWeight: FontWeight.w600,
-      fontSize: 9.5,
-    ),
-    this.bubbleIndicatorValueStyle = const TextStyle(
-      color: Colors.black,
-      fontWeight: FontWeight.bold,
-      fontSize: 11,
-    ),
-    this.bubbleIndicatorValueFormat,
-    this.physics = const AlwaysScrollableScrollPhysics(),
-    this.updatePositionOnTap = false,
-    bool verticalLineFullHeight,
-    this.showCircleIndicators = true,
-    this.bubbleIndicatorBlurShadow = false,
-  }) : this.verticalLineFullHeight =
+  ///[Optional] This callback helps to perform action when clicked on bubble indicator
+  final BubbleIndicatorTap onBubbleIndicatorTapDown;
+
+  BezierChartConfig(
+      {this.verticalIndicatorStrokeWidth = 2.0,
+      this.verticalIndicatorColor = Colors.black,
+      this.showVerticalIndicator = true,
+      this.showDataPoints = true,
+      this.displayYAxis = false,
+      this.snap = true,
+      this.backgroundColor = Colors.transparent,
+      this.xAxisTextStyle,
+      this.yAxisTextStyle,
+      this.footerHeight = 35.0,
+      this.contentWidth,
+      this.pinchZoom = true,
+      this.bubbleIndicatorColor = Colors.white,
+      this.backgroundGradient,
+      this.verticalIndicatorFixedPosition = false,
+      this.startYAxisFromNonZeroValue = true,
+      this.displayLinesXAxis = false,
+      this.stepsYAxis,
+      this.xLinesColor = Colors.grey,
+      this.displayDataPointWhenNoValue = true,
+      this.bubbleIndicatorLabelStyle = const TextStyle(
+        color: Colors.grey,
+        fontWeight: FontWeight.w700,
+        fontSize: 9,
+      ),
+      this.bubbleIndicatorTitleStyle = const TextStyle(
+        color: Colors.grey,
+        fontWeight: FontWeight.w600,
+        fontSize: 9.5,
+      ),
+      this.bubbleIndicatorValueStyle = const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 11,
+      ),
+      this.bubbleIndicatorValueFormat,
+      this.physics = const AlwaysScrollableScrollPhysics(),
+      this.updatePositionOnTap = false,
+      bool verticalLineFullHeight,
+      this.showCircleIndicators = true,
+      this.bubbleIndicatorBlurShadow = false,
+      this.onBubbleIndicatorTapDown})
+      : this.verticalLineFullHeight =
             verticalLineFullHeight ?? verticalIndicatorFixedPosition;
 }
