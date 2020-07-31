@@ -148,7 +148,7 @@ class BezierChart extends StatefulWidget {
 
 @visibleForTesting
 class BezierChartState extends State<BezierChart>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   AnimationController _animationController;
   ScrollController _scrollController;
   GlobalKey _keyScroll = GlobalKey();
@@ -776,6 +776,14 @@ class BezierChartState extends State<BezierChart>
         milliseconds: 300,
       ),
     );
+    _bubbleAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        seconds: 2,
+      ),
+    );
+    _bubbleAnimationController.forward();
+
     _buildXDataPoints();
     _computeSeries();
     WidgetsBinding.instance.addPostFrameCallback(_onLayoutDone);
@@ -785,16 +793,20 @@ class BezierChartState extends State<BezierChart>
   @override
   void dispose() {
     _animationController.dispose();
+    _bubbleAnimationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   int _touchFingers = 0;
+  AnimationController _bubbleAnimationController;
+  Animation _bubbleAnimation;
 
   @override
   Widget build(BuildContext context) {
     if (allowReRendering == true) {
       if (widget.selectedValue != _selectedValue) {
+        Offset previous = _verticalIndicatorPosition;
         int index = -1;
         index = _xAxisDataPoints
             .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
@@ -802,12 +814,17 @@ class BezierChartState extends State<BezierChart>
           final space = (_contentWidth / _xAxisDataPoints.length);
           Offset fixedPosition =
               Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-          setState(
-            () {
-              _verticalIndicatorPosition = fixedPosition;
-              _selectedValue = widget.selectedValue;
-            },
-          );
+          _bubbleAnimation = Tween(begin: previous, end: fixedPosition).animate(
+              CurvedAnimation(
+                  parent: _bubbleAnimationController, curve: Curves.easeInOut))
+            ..addListener(() {
+              setState(() {
+                _verticalIndicatorPosition = _bubbleAnimation.value;
+                _selectedValue = widget.selectedValue;
+              });
+            });
+          _bubbleAnimationController.reset();
+          _bubbleAnimationController.forward();
         }
       }
     }
