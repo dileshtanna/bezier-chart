@@ -1447,9 +1447,18 @@ class _BezierChartPainter extends CustomPainter {
         }
 
         ///Draw Bubble Indicator Info
+        
+        
+        double blurRadius = 5;
+
+        final paintInfo = Paint()
+          ..color = config.bubbleIndicatorColor
+          ..style = PaintingStyle.fill;
+         
 
         /// Draw shadow bubble info
-        if (animation.isCompleted) {
+        if(!config.bubbleIndicatorBlurShadow){
+          if (animation.isCompleted) {
           Path path = Path();
           path.moveTo(center.dx - infoWidth / 2 + 4,
               center.dy - offsetInfo + infoHeight / 1.8);
@@ -1461,10 +1470,10 @@ class _BezierChartPainter extends CustomPainter {
           // canvas.drawShadow(path, Colors.black, 20.0, false);
           canvas.drawPath(path, paintControlPoints..color = Colors.black12);
         }
-
-        final paintInfo = Paint()
-          ..color = config.bubbleIndicatorColor
-          ..style = PaintingStyle.fill;
+        }
+        else{
+          paintInfo.maskFilter = MaskFilter.blur(BlurStyle.normal, blurRadius * 0.57735 + 0.5);
+        }
 
         //Draw Bubble info
         canvas.drawRRect(

@@ -108,6 +108,9 @@ class BezierChartConfig {
   ///`true` if you want to show the circles in bubble indicator represnting the line color
   final bool showCircleIndicators;
 
+  ///`false` if you don't want blur shadow it will solid shadow
+  final bool bubbleIndicatorBlurShadow;
+
   BezierChartConfig({
     this.verticalIndicatorStrokeWidth = 2.0,
     this.verticalIndicatorColor = Colors.black,
@@ -147,8 +150,9 @@ class BezierChartConfig {
     this.bubbleIndicatorValueFormat,
     this.physics = const AlwaysScrollableScrollPhysics(),
     this.updatePositionOnTap = false,
-    this.showCircleIndicators = true,
     bool verticalLineFullHeight,
+    this.showCircleIndicators = true,
+    this.bubbleIndicatorBlurShadow = false,
   }) : this.verticalLineFullHeight =
             verticalLineFullHeight ?? verticalIndicatorFixedPosition;
 }
