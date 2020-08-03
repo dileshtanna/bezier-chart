@@ -149,7 +149,7 @@ class BezierChart extends StatefulWidget {
 
 @visibleForTesting
 class BezierChartState extends State<BezierChart>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   AnimationController _animationController;
   ScrollController _scrollController;
   GlobalKey _keyScroll = GlobalKey();
@@ -777,6 +777,14 @@ class BezierChartState extends State<BezierChart>
         milliseconds: 300,
       ),
     );
+    _bubbleAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        seconds: 1,
+      ),
+    );
+    _bubbleAnimationController.forward();
+
     _buildXDataPoints();
     _computeSeries();
     WidgetsBinding.instance.addPostFrameCallback(_onLayoutDone);
@@ -786,16 +794,20 @@ class BezierChartState extends State<BezierChart>
   @override
   void dispose() {
     _animationController.dispose();
+    _bubbleAnimationController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   int _touchFingers = 0;
+  AnimationController _bubbleAnimationController;
+  Animation _bubbleAnimation;
 
   @override
   Widget build(BuildContext context) {
     if (allowReRendering == true) {
       if (widget.selectedValue != _selectedValue) {
+        Offset previous = _verticalIndicatorPosition;
         int index = -1;
         index = _xAxisDataPoints
             .indexWhere((dp) => (dp.xAxis as double) == widget.selectedValue);
@@ -803,12 +815,17 @@ class BezierChartState extends State<BezierChart>
           final space = (_contentWidth / _xAxisDataPoints.length);
           Offset fixedPosition =
               Offset(isOnlyOneAxis ? 0.0 : (index * space) + space / 2, 0.0);
-          setState(
-            () {
-              _verticalIndicatorPosition = fixedPosition;
-              _selectedValue = widget.selectedValue;
-            },
-          );
+          _bubbleAnimation = Tween(begin: previous, end: fixedPosition).animate(
+              CurvedAnimation(
+                  parent: _bubbleAnimationController, curve: Curves.easeInOut))
+            ..addListener(() {
+              setState(() {
+                _verticalIndicatorPosition = _bubbleAnimation.value;
+                _selectedValue = widget.selectedValue;
+              });
+            });
+          _bubbleAnimationController.reset();
+          _bubbleAnimationController.forward();
         }
       }
     }
@@ -1288,7 +1305,7 @@ class _BezierChartPainter extends CustomPainter {
               onDataPointSnap(xAxisDataPoints[i].value);
               _currentCustomValues.add(
                 _CustomValue(
-                  value: "${formatAsIntOrDouble(axisY)}",
+                  value: "${line.data[i].toDisplay}",
                   label: line.label,
                   color: line.lineColor,
                 ),
@@ -1557,31 +1574,31 @@ class _BezierChartPainter extends CustomPainter {
           );
 
           //draw circle indicators and text
-          if (config.showCircleIndicators) {
-            for (int z = 0; z < _currentCustomValues.length; z++) {
-              _CustomValue customValue = _currentCustomValues[z];
-              Offset centerIndicator = centerCircles.reversed.toList()[z];
-              Offset fixedCenter = Offset(
-                  centerIndicator.dx -
-                      infoWidth / 2 +
-                      radiusDotIndicatorItems +
-                      4,
-                  centerIndicator.dy);
-              canvas.drawCircle(
-                  fixedCenter,
-                  radiusDotIndicatorItems,
-                  Paint()
-                    ..color = customValue.color
-                    ..style = PaintingStyle.fill);
-              canvas.drawCircle(
-                  fixedCenter,
-                  radiusDotIndicatorItems,
-                  Paint()
-                    ..color = Colors.black
-                    ..strokeWidth = 0.5
-                    ..style = PaintingStyle.stroke);
-            }
-          }
+          // if (config.showCircleIndicators) {
+          //   for (int z = 0; z < _currentCustomValues.length; z++) {
+          //     _CustomValue customValue = _currentCustomValues[z];
+          //     Offset centerIndicator = centerCircles.reversed.toList()[z];
+          //     Offset fixedCenter = Offset(
+          //         centerIndicator.dx -
+          //             infoWidth / 2 +
+          //             radiusDotIndicatorItems +
+          //             4,
+          //         centerIndicator.dy);
+          //     canvas.drawCircle(
+          //         fixedCenter,
+          //         radiusDotIndicatorItems,
+          //         Paint()
+          //           ..color = customValue.color
+          //           ..style = PaintingStyle.fill);
+          //     canvas.drawCircle(
+          //         fixedCenter,
+          //         radiusDotIndicatorItems,
+          //         Paint()
+          //           ..color = Colors.black
+          //           ..strokeWidth = 0.5
+          //           ..style = PaintingStyle.stroke);
+          //   }
+          // }
         }
       }
     }
