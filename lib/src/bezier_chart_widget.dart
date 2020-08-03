@@ -1297,7 +1297,7 @@ class _BezierChartPainter extends CustomPainter {
               onDataPointSnap(xAxisDataPoints[i].value);
               _currentCustomValues.add(
                 _CustomValue(
-                  value: "${formatAsIntOrDouble(axisY)}",
+                  value: "${line.data[i].toDisplay}",
                   label: line.label,
                   color: line.lineColor,
                 ),
@@ -1526,29 +1526,29 @@ class _BezierChartPainter extends CustomPainter {
           );
 
           //draw circle indicators and text
-          for (int z = 0; z < _currentCustomValues.length; z++) {
-            _CustomValue customValue = _currentCustomValues[z];
-            Offset centerIndicator = centerCircles.reversed.toList()[z];
-            Offset fixedCenter = Offset(
-                centerIndicator.dx -
-                    infoWidth / 2 +
-                    radiusDotIndicatorItems +
-                    4,
-                centerIndicator.dy);
-            canvas.drawCircle(
-                fixedCenter,
-                radiusDotIndicatorItems,
-                Paint()
-                  ..color = customValue.color
-                  ..style = PaintingStyle.fill);
-            canvas.drawCircle(
-                fixedCenter,
-                radiusDotIndicatorItems,
-                Paint()
-                  ..color = Colors.black
-                  ..strokeWidth = 0.5
-                  ..style = PaintingStyle.stroke);
-          }
+          // for (int z = 0; z < _currentCustomValues.length; z++) {
+          //   _CustomValue customValue = _currentCustomValues[z];
+          //   Offset centerIndicator = centerCircles.reversed.toList()[z];
+          //   Offset fixedCenter = Offset(
+          //       centerIndicator.dx -
+          //           infoWidth / 2 +
+          //           radiusDotIndicatorItems +
+          //           4,
+          //       centerIndicator.dy);
+          //   // canvas.drawCircle(
+          //   //     fixedCenter,
+          //   //     radiusDotIndicatorItems,
+          //   //     Paint()
+          //   //       ..color = customValue.color
+          //   //       ..style = PaintingStyle.fill);
+          //   // canvas.drawCircle(
+          //   //     fixedCenter,
+          //   //     radiusDotIndicatorItems,
+          //   //     Paint()
+          //   //       ..color = Colors.black
+          //   //       ..strokeWidth = 0.5
+          //   //       ..style = PaintingStyle.stroke);
+          // }
         }
       }
     }

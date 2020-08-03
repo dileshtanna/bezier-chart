@@ -73,13 +73,12 @@ class DataPoint<T> {
   ///The value `Y`
   final double value;
 
+  final String toDisplay;
+
   ///The `X` Axis value, it supports `double` and `DateTime` for now
   final T xAxis;
 
-  const DataPoint({
-    this.value,
-    this.xAxis,
-  });
+  const DataPoint({this.value, this.xAxis, this.toDisplay});
 
   String toString() => "value: $value, xAxis: $xAxis";
 }
